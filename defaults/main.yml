@@ -1,23 +1,23 @@
 ---
-marathon_playbook_version: "0.3.1"
-
-marathon_hostname: "{{ inventory_hostname }}"
-marathon_version: "0.8.1"
-marathon_port: 8080
-marathon_env_java_opts: '-Xmx512m'
-marathon_env_vars:
-  - "JAVA_OPTS={{ marathon_env_java_opts }}"
+marathon_version: 0.9.0
 
 # command line flags:
 # https://mesosphere.github.io/marathon/docs/command-line-flags.html
 # Marathon reads files under /etc/marathon/conf and adds them to CLI
-zookeeper_hostnames: "localhost:2181"
-mesos_zookeeper_path: "/mesos"
-marathon_zookeeper_path: "/marathon"
-mesos_zookeeper_masters: "zk://{{ zookeeper_hostnames }}{{ mesos_zookeeper_path }}"
-marathon_zookeeper_state: "zk://{{ zookeeper_hostnames }}{{ marathon_zookeeper_path }}"
-haproxy_script_location: "/usr/local/bin"
+marathon_zk_dns: "localhost"
+marathon_zk_port: 2181
+marathon_zk_chroot: marathon
+marathon_zk_connect: "zk://{{ marathon_zk_dns }}:{{ marathon_zk_port }}/{{ marathon_zk_chroot }}"
 
-# optional
-artifact_store: ""
-checkpoint: "true"
+marathon_http_credentials: ""
+marathon_keystore_path: ""
+marathon_keystore_password: ""
+
+marathon_hostname: "{{ inventory_hostname }}"
+marathon_port: 8080
+
+marathon_env_java_opts: '-Xmx512m'
+marathon_env_vars:
+  - "JAVA_OPTS={{ marathon_env_java_opts }}"
+
+haproxy_script_location: "/usr/local/bin"

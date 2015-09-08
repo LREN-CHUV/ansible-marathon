@@ -13,9 +13,10 @@ Marathon role for Ansible with optional HAProxy configuration support. Marathon 
 
 See ```defaults/main.yml``` for a full list. The most important settings are:
 
-* ```zookeeper_hostnames: "localhost:2181"``` The path to Zookeeper which Marathon can use to find the Mesos masters and use as a state store.
+* ```marathon_zk_dns: "localhost"``` The DNS name of Zookeeper which Marathon can use to find the Mesos masters and use as a state store.
+* ```marathon_zk_port: "2181"``` The port of Zookeeper which Marathon can use to find the Mesos masters and use as a state store.
 * ```mesos_zookeeper_path: "/mesos"``` The path to Mesos in the Zookeeper cluster
-* ```marathon_zookeeper_path: "/marathon"``` The path to Marathon in the Zookeeper cluster 
+* ```marathon_zk_chroot: "marathon"``` The path to Marathon in the Zookeeper cluster
 * ```haproxy_script_location: "/usr/local/bin"``` The path to install the haproxy configuration script. If this is an empty string ```""``` haproxy configuration will be disabled.
 
 ## HAProxy Support
