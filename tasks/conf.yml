@@ -96,8 +96,9 @@
   tags:
     - marathon
 
+# Upstart may be supported but not used by default, as in Debian Sid
 - name: Upstart check
-  stat: path=/etc/init/
+  stat: path=/etc/init/marathon.conf
   register: etc_init_check
 
 - name: systemd check
