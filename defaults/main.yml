@@ -1,5 +1,6 @@
 ---
-marathon_version: 0.9.0
+marathon_version: 0.10.1
+marathon_package_version: 1.0.416
 
 # command line flags:
 # https://mesosphere.github.io/marathon/docs/command-line-flags.html
