@@ -16,9 +16,12 @@ marathon_keystore_password: ""
 
 marathon_hostname: "{{ inventory_hostname }}"
 marathon_port: 8080
+# This value should be greater than mesos_executor_registration_timeout
+marathon_task_launch_timeout: "6mins"
 
 marathon_env_java_opts: '-Xmx512m'
 marathon_env_vars:
   - "JAVA_OPTS={{ marathon_env_java_opts }}"
+  - "MARATHON_TASK_LAUNCH_TIMEOUT={{marathon_task_launch_timeout}}"
 
 haproxy_script_location: "/usr/local/bin"
