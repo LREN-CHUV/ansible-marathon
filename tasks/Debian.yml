@@ -11,5 +11,6 @@
   apt:
     pkg: marathon={{marathon_version}}-{{marathon_package_version}}.{{ansible_distribution|lower}}{{ansible_distribution_version.split('.')|join('')}}
     state: present
+    install_recommends: no
     update_cache: yes
     cache_valid_time: 600
