@@ -102,7 +102,7 @@
   register: etc_init_check
 
 - name: systemd check
-  stat: path=/usr/lib/systemd/system/
+  stat: path=/usr/lib/systemd/
   register: systemd_check
 
 - name: Upstart environment variables 
