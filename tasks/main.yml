@@ -8,7 +8,6 @@
   when: ansible_os_family == "RedHat"
 
 - name: install wait script
-  sudo: yes
   template:
     src: marathon-wait-for-listen.sh.j2
     dest: /usr/local/bin/marathon-wait-for-listen.sh

@@ -1,7 +1,6 @@
 ---
 
 - name: restart marathon
-  sudo: yes
   service: name=marathon state=restarted
   notify:
     - wait for marathon to listen
