@@ -18,7 +18,9 @@ marathon_hostname: "{{ inventory_hostname }}"
 marathon_port: 8080
 
 marathon_env_java_opts: '-Xmx512m'
+marathon_env_java_home: '{{ ansible_local.java.general.java_home }}'
 marathon_env_vars:
+  - "JAVA_HOME={{ marathon_env_java_home }}"
   - "JAVA_OPTS={{ marathon_env_java_opts }}"
 
 haproxy_script_location: "/usr/local/bin"
