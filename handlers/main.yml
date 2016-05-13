@@ -1,4 +1,9 @@
 ---
+- name: reload marathon
+  become: yes
+  command: systemctl daemon-reload
+  notify:
+    - wait for marathon to listen
 
 - name: restart marathon
   service: name=marathon state=restarted

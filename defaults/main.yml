@@ -5,22 +5,36 @@ marathon_package_version: 1.0.416
 # command line flags:
 # https://mesosphere.github.io/marathon/docs/command-line-flags.html
 # Marathon reads files under /etc/marathon/conf and adds them to CLI
-marathon_zk_dns: "localhost"
+marathon_zk_auth: "{% if zk_marathon_user_secret is defined %}{{ zk_marathon_user }}:{{ zk_marathon_user_secret }}@{% endif %}"
+marathon_zk_dns: "{{ inventory_hostname }}"
+marathon_zk_hosts: "{% for host in groups[zookeeper] %}{{ host }}:{{mesos_zk_port}}{% if not loop.last %},{% endif %}{% endfor %}"
+
 marathon_zk_port: 2181
 marathon_zk_chroot: marathon
-marathon_zk_connect: "zk://{{ marathon_zk_dns }}:{{ marathon_zk_port }}/{{ marathon_zk_chroot }}"
+marathon_zk_connect: "zk://{{ marathon_zk_auth}}{{ marathon_zk_hosts }}/{{ marathon_zk_chroot }}"
+
+marathon_zk_acl_world: "world:anyone:cdrwa"
+marathon_zk_acl: "{% if zk_marathon_user_secret is defined %}digest:{{ zk_marathon_user }}:{{ zk_marathon_user_secret_digest}}:cdraw{% endif  %}"
+marathon_mesos: "{{ mesos_zk }}"
+
+marathon_zk_acl_cmd: "zookeepercli -servers localhost:{{ marathon_zk_port }} -auth_usr='super' -auth_pwd='{{ zk_super_user_secret }}' -force -c setacl /{{ marathon_zk_chroot }} '{{ marathon_zk_acl_world }},{{ marathon_zk_acl }}'"
 
 marathon_http_credentials: ""
 marathon_keystore_path: ""
 marathon_keystore_password: ""
 
+# LATER: marathon_hostname: {{ inventory_hostname }}.node.{{ consul_dns_domain }}
 marathon_hostname: "{{ inventory_hostname }}"
 marathon_port: 8080
+
+marathon_log_level: warn
+
+# framework authentication
+marathon_principal: marathon
+marathon_secret: ""
 
 marathon_env_java_opts: '-Xmx512m'
 marathon_env_java_home: '{{ ansible_local.java.general.java_home }}'
 marathon_env_vars:
   - "JAVA_HOME={{ marathon_env_java_home }}"
   - "JAVA_OPTS={{ marathon_env_java_opts }}"
-
-haproxy_script_location: "/usr/local/bin"

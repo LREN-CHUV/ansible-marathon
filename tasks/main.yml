@@ -17,10 +17,19 @@
 
 - include: conf.yml
 
+- name: configure marathon unit file
+  sudo: yes
+  replace:
+    dest: /lib/systemd/system/marathon.service
+    regexp: "=network.target"
+    replace: '=mesos-master.service'
+  notify:
+    - reload marathon
+    - restart marathon
+  tags:
+    - marathon
+
 - meta: flush_handlers
 
-- include: haproxy.yml
-  when: haproxy_script_location != ""
-
 - name: Start Marathon service
-  service: name=marathon state=restarted enabled=yes 
+  service: name=marathon state=restarted enabled=yes
