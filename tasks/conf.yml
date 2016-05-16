@@ -9,12 +9,15 @@
   tags:
     - marathon
 
+# Systemd
+
 - name: write marathon config file
   become: yes
   template:
     src: marathon.sysconfig.j2
     dest: /etc/sysconfig/marathon
     mode: 0600
+  when: systemd_check.stat.exists == True
   notify:
     - restart marathon
   tags:
@@ -47,13 +50,12 @@
   tags:
     - marathon
 
-
 - name: check keystore consistency
   fail: msg="cannot set keystore path without keystore password"
   when: marathon_keystore_path != "" and marathon_keystore_password == ""
 
 - name: copy ssl keystore
-  when: marathon_keystore_path != ""
+  when: marathon_keystore_path != "" and systemd_check.stat.exists == True
   become: yes
   copy:
     src: "{{ marathon_keystore_path }}"
@@ -62,3 +64,64 @@
     - restart marathon
   tags:
     - marathon
+
+# Upstart
+
+- name: create marathon conf directory
+  file:
+    dest: /etc/marathon/conf
+    state: directory
+  when: etc_init_check.stat.exists == true and systemd_check.stat.exists == false
+  tags:
+    - marathon
+
+- name: set key/value options
+  when: item.value != "" and etc_init_check.stat.exists == true and systemd_check.stat.exists == false
+  copy:
+    dest: /etc/marathon/conf/{{ item.key }}
+    content: "{{ item.value }}"
+  with_items:
+    - key: zk
+      value: "{{ marathon_zk_connect }}"
+    - key: ssl_keystore_password
+      value: "{{ marathon_keystore_password }}"
+    - key: http_port
+      value: "{{ marathon_port }}"
+    - key: event_subscriber
+      value: http_callback
+    - key: hostname
+      value: "{{ marathon_hostname }}"
+    - key: artifact_store
+      value: "file:///etc/marathon/store"
+  notify:
+    - restart marathon
+  tags:
+    - marathon
+
+# since the Mesosphere Marathon package configures itself with files
+# in a directory, we need to clean up old options when they become
+# unset.
+- name: remove blank options
+  when: item.value == "" and etc_init_check.stat.exists == true and systemd_check.stat.exists == false
+  file:
+    dest: /etc/marathon/conf/{{ item.key }}
+    state: absent
+    mode: 0700
+  with_items:
+    - key: http_credentials
+      value: "{{ marathon_http_credentials }}"
+    - key: ssl_keystore_password
+      value: "{{ marathon_keystore_password }}"
+    - key: ssl_keystore_path
+      value: "{{ marathon_keystore_path }}"
+  notify:
+    - restart marathon
+  tags:
+    - marathon
+
+- name: Upstart environment variables
+  lineinfile: dest=/etc/init/marathon.conf backup=yes state=present insertbefore='exec.*' line="env {{ item }}"
+  with_items: '{{marathon_env_vars}}'
+  when: etc_init_check.stat.exists == True
+  notify:
+    - restart marathon

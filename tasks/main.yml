@@ -1,6 +1,14 @@
 ---
 - include_vars: "{{ ansible_os_family }}.yml"
 
+- name: Check if upstart exists
+  stat: path=/etc/init/
+  register: etc_init_check
+
+- name: Check if systemd exists
+  stat: path=/bin/systemctl
+  register: systemd_check
+
 - include: Debian.yml
   when: ansible_os_family == "Debian"
 
@@ -23,6 +31,7 @@
     dest: /lib/systemd/system/marathon.service
     regexp: "=network.target"
     replace: '=mesos-master.service'
+  when: systemd_check.stat.exists == True
   notify:
     - reload marathon
     - restart marathon
