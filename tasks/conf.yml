@@ -11,6 +11,14 @@
 
 # Systemd
 
+- name: delete marathon conf directory
+  file:
+    path: /etc/marathon/conf
+    state: absent
+  when: systemd_check.stat.exists == True
+  tags:
+    - marathon
+
 - name: write marathon config file
   become: yes
   template:
@@ -122,6 +130,6 @@
 - name: Upstart environment variables
   lineinfile: dest=/etc/init/marathon.conf backup=yes state=present insertbefore='exec.*' line="env {{ item }}"
   with_items: '{{marathon_env_vars}}'
-  when: etc_init_check.stat.exists == True
+  when: etc_init_check.stat.exists == true and systemd_check.stat.exists == false
   notify:
     - restart marathon
