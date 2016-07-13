@@ -29,6 +29,8 @@ marathon_port: 8080
 
 marathon_log_level: warn
 
+marathon_mesos_role: "middleware"
+
 # framework authentication
 marathon_principal: marathon
 marathon_secret: ""

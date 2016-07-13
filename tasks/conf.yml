@@ -101,6 +101,10 @@
       value: "{{ marathon_hostname }}"
     - key: artifact_store
       value: "file:///etc/marathon/store"
+    - key: mesos_role
+      value: "{{ marathon_mesos_role }}"
+    - key: mesos_authentication_principal
+      value: "{{ marathon_principal }}"
   notify:
     - restart marathon
   tags:
