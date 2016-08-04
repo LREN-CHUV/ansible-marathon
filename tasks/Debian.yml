@@ -7,6 +7,14 @@
     repo: "{{marathon_apt_repo}}"
     state: present
 
+- name: Install unzip package
+  apt:
+    pkg: unzip
+    state: present
+    install_recommends: no
+    update_cache: yes
+    cache_valid_time: 600
+
 - name: Install Marathon package
   apt:
     pkg: marathon={{marathon_version}}-{{marathon_package_version}}.{{ansible_distribution|lower}}{{ansible_distribution_version.split('.')|join('')|replace('1510','1504')}}
