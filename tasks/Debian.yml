@@ -17,7 +17,7 @@
 
 - name: Install Marathon package
   apt:
-    pkg: marathon={{marathon_version}}-{{marathon_package_version}}.{{ansible_distribution|lower}}{{ansible_distribution_version.split('.')|join('')|replace('1510','1504')}}
+    pkg: marathon={{marathon_version}}-{{marathon_package_version}}.{{ansible_distribution|lower}}{{ansible_distribution_version.split('.')|join('')|replace('1510','1504')|replace('1604','1504')}}
     state: present
     install_recommends: no
     update_cache: yes
