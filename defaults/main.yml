@@ -3,8 +3,7 @@ marathon_version: "1.4.2"
 
 # Debian: Mesosphere apt repository URL
 marathon_package_version: "1.0.647"
-marathon_apt_package: "marathon={{ marathon_version }}-{{ marathon_package_version }}"
-#marathon_apt_package: "marathon={{ marathon_version }}-{{ marathon_package_version }}.{{ansible_distribution|lower}}{{ansible_distribution_version.split('.')|join('')|replace('1510','1504')}}"
+marathon_apt_package: "marathon={{ marathon_version }}-{{ marathon_package_version }}.{{ansible_distribution|lower}}{{ansible_distribution_version.split('.')|join('')|replace('1510','1504')}}"
 marathon_apt_repo: "deb http://repos.mesosphere.com/{{ansible_distribution|lower}} {{ansible_distribution_release|lower}} main"
 
 # RedHat: Mesosphere yum repository URL
