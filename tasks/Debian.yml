@@ -4,21 +4,21 @@
 
 - name: Add Mesosphere repo
   apt_repository:
-    repo: "{{marathon_apt_repo}}"
+    repo: "{{ marathon_apt_repo }}"
     state: present
+    update_cache: yes
 
 - name: Install unzip package
   apt:
     pkg: unzip
     state: present
     install_recommends: no
-    update_cache: yes
-    cache_valid_time: 600
+    cache_valid_time: 3600
 
 - name: Install Marathon package
   apt:
-    pkg: marathon={{marathon_version}}-{{marathon_package_version}}.{{ansible_distribution|lower}}{{ansible_distribution_version.split('.')|join('')|replace('1510','1504')}}
+    pkg: "{{ marathon_apt_package }}"
     state: present
     install_recommends: no
-    update_cache: yes
-    cache_valid_time: 600
+    cache_valid_time: 3600
+  notify: restart marathon

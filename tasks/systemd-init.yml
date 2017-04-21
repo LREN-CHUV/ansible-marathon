@@ -1,0 +1,94 @@
+---
+
+- name: delete old marathon configuration
+  file:
+    path: /etc/marathon/conf
+    state: absent
+  with_items:
+    - /etc/marathon/conf
+    - /etc/sysconfig/marathon
+  tags:
+    - marathon
+
+- name: create marathon directory
+  become: yes
+  file:
+    dest: /etc/marathon
+    state: directory
+    mode: 0755
+  tags:
+    - marathon
+
+- name: create marathon store directory
+  become: yes
+  file:
+    dest: /etc/marathon/store
+    state: directory
+    mode: 0600
+  tags:
+    - marathon
+
+- name: create marathon apps directory
+  become: yes
+  file:
+    dest: /etc/marathon/apps
+    state: directory
+    mode: 0600
+  tags:
+    - marathon
+
+- name: check keystore consistency
+  fail: msg="cannot set keystore path without keystore password"
+  when: marathon_keystore_path != "" and marathon_keystore_password == ""
+
+- name: copy ssl keystore
+  when: marathon_keystore_path != ""
+  become: yes
+  copy:
+    src: "{{ marathon_keystore_path }}"
+    dest: /etc/sysconfig/marathon-keystore.jks
+  notify:
+    - restart marathon
+  tags:
+    - marathon
+
+- name: Make sure service dropin directory is available
+  file:
+    path: /etc/systemd/system/marathon.service.d/
+    state: directory
+
+- name: Systemd unit - add dependency on mesos-slave
+  template: src=10-unit.conf.j2 dest=/etc/systemd/system/marathon.service.d/10-unit.conf
+  notify:
+    - reload marathon
+    - restart marathon
+
+- name: Systemd ExecStart for Marathon startup
+  template: src=20-execstart.conf.j2 dest=/etc/systemd/system/marathon.service.d/20-execstart.conf
+  notify:
+    - reload marathon
+    - restart marathon
+
+- name: Systemd environment variables
+  template: src=22-environment.conf.j2 dest=/etc/systemd/system/marathon.service.d/22-environment.conf
+  notify:
+    - reload marathon
+    - restart marathon
+
+- name: Add SSL settings/environment variables
+  template:
+    src: 30-ssl.conf.j2
+    dest: /etc/systemd/system/marathon.service.d/30-ssl.conf
+  when:  mesos_ssl_enabled
+  notify:
+  - reload marathon
+  - restart marathon
+
+- name: Remove SSL settings/environment variables
+  file:
+    path: /etc/systemd/system/marathon.service.d/30-ssl.conf
+    state: absent
+  when: not mesos_ssl_enabled
+  notify:
+  - reload systemd
+  - restart marathon

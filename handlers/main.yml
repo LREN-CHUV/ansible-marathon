@@ -2,6 +2,7 @@
 - name: reload marathon
   become: yes
   command: systemctl daemon-reload
+  when: ansible_service_mgr == 'systemd'
   notify:
     - wait for marathon to listen
 

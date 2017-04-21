@@ -1,14 +1,6 @@
 ---
 - include_vars: "{{ ansible_os_family }}.yml"
 
-- name: Check if upstart exists
-  stat: path=/etc/init/
-  register: etc_init_check
-
-- name: Check if systemd exists
-  stat: path=/bin/systemctl
-  register: systemd_check
-
 - include: Debian.yml
   when: ansible_os_family == "Debian"
 
@@ -23,20 +15,21 @@
   tags:
     - marathon
 
-- include: conf.yml
-
-- name: configure marathon unit file
-  sudo: yes
-  replace:
-    dest: /lib/systemd/system/marathon.service
-    regexp: "=network.target"
-    replace: '=mesos-master.service'
-  when: systemd_check.stat.exists == True
-  notify:
-    - reload marathon
-    - restart marathon
+- name: wait for zookeeper service to be registered
+  wait_for:
+    host: "{{ marathon_zk_dns }}"
+    port: "{{ marathon_zk_port }}"
+    delay: 10
+    timeout: 300
+    state: present
   tags:
     - marathon
+
+- include: upstart-init.yml
+  when: ansible_service_mgr != 'systemd'
+
+- include: systemd-init.yml
+  when: ansible_service_mgr == 'systemd'
 
 - meta: flush_handlers
 
