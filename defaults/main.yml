@@ -15,8 +15,8 @@ mesosphere_yum_repo: "http://repos.mesosphere.com/el/{{ os_version_major }}/noar
 # https://mesosphere.github.io/marathon/docs/command-line-flags.html
 # Marathon reads files under /etc/marathon/conf and adds them to CLI
 marathon_zk_auth: "{% if zk_marathon_user_secret is defined %}{{ zk_marathon_user }}:{{ zk_marathon_user_secret }}@{% endif %}"
-marathon_zk_dns: "{{ inventory_hostname }}"
-marathon_zk_hosts: "{% for host in groups[zookeeper] %}{{ host }}:{{mesos_zk_port}}{% if not loop.last %},{% endif %}{% endfor %}"
+marathon_zk_dns: "{{ ansible_fqdn }}"
+marathon_zk_hosts: "{% for host in groups[zookeeper] %}{{ hostvars[host]['ansible_fqdn'] }}:{{mesos_zk_port}}{% if not loop.last %},{% endif %}{% endfor %}"
 
 marathon_zk_port: 2181
 marathon_zk_chroot: marathon
@@ -33,7 +33,7 @@ marathon_keystore_path: ""
 marathon_keystore_password: ""
 
 # LATER: marathon_hostname: {{ inventory_hostname }}.node.{{ consul_dns_domain }}
-marathon_hostname: "{{ inventory_hostname }}"
+marathon_hostname: "{{ ansible_fqdn }}"
 marathon_port: 8080
 
 marathon_log_level: warn
