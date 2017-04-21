@@ -35,3 +35,15 @@
 
 - name: Start Marathon service
   service: name=marathon state=restarted enabled=yes
+
+- name: Ensure that Marathon has started
+  service: name=marathon state=started
+  tags: deploy
+  register: marathon_running
+
+- name: Validate that Marathon has started
+  fail:
+    msg: >
+      Marathon has not started as expected, please check its current status or error messages
+  when: marathon_running|changed
+  tags: deploy
