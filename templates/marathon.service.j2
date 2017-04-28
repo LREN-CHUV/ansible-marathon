@@ -1,0 +1,25 @@
+# {{ansible_managed}}
+
+[Unit]
+Description=Marathon
+
+{# LSC: Can't use the following, as it will fail to restart the downstream
+ # services in case of failure and proper restart of the upstream services.
+ #}
+#BindsTo=mesos-master.service
+
+Requires=mesos-master.service
+After=mesos-master.service
+{# LSC: Make sure that we are restarted if our upstream dependencies are
+ # restarted.
+ #}
+PartOf=mesos-master.service zookeeper.service network.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/marathon
+ExecStart=/usr/bin/marathon
+Restart=on-failure
+RestartSec=20
+
+[Install]
+WantedBy=multi-user.target
