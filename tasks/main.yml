@@ -33,17 +33,20 @@
 
 - meta: flush_handlers
 
-- name: Start Marathon service
+- name: Restart Marathon service
   service: name=marathon state=restarted enabled=yes
 
-- name: Ensure that Marathon has started
+- name: Ensure that Marathon has started and keeps running
   service: name=marathon state=started
   tags: deploy
   register: marathon_running
+  until: marathon_running.state == 'started' and not marathon_running|changed
+  retries: 2
+  delay: 5
 
-- name: Validate that Marathon has started
+- name: Validate that Marathon is running
   fail:
     msg: >
-      Marathon has not started as expected, please check its current status or error messages
-  when: marathon_running|changed
+      Service marathon has not started as expected, please check its current status or error messages
+  when: marathon_running.state != 'started' or marathon_running|changed
   tags: deploy
