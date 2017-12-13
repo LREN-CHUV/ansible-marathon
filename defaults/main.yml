@@ -50,7 +50,6 @@ marathon_secret: ""
 
 marathon_options:
   - "{% if marathon_checkpoint|bool %}--checkpoint{% endif %}"
-  - "--event_subscriber=http_callback"
   - "--hostname={{ marathon_hostname }}"
   - "--http_port={{ marathon_port }}"
   - "--logging_level={{ marathon_log_level }}"

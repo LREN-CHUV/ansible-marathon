@@ -19,8 +19,6 @@
       value: "{{ marathon_keystore_password }}"
     - key: http_port
       value: "{{ marathon_port }}"
-    - key: event_subscriber
-      value: http_callback
     - key: hostname
       value: "{{ marathon_hostname }}"
     - key: mesos_role
