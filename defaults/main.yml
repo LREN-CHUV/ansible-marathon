@@ -38,7 +38,6 @@ marathon_port: 8080
 marathon_log_level: warn
 
 marathon_mesos_role: ""
-marathon_artifact_store: "file:///etc/marathon/store"
 marathon_checkpoint: "true"
 
 # SSL
@@ -50,7 +49,6 @@ marathon_principal: marathon
 marathon_secret: ""
 
 marathon_options:
-  - "--artifact_store={{ marathon_artifact_store }}"
   - "{% if marathon_checkpoint|bool %}--checkpoint{% endif %}"
   - "--event_subscriber=http_callback"
   - "--hostname={{ marathon_hostname }}"
