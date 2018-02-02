@@ -1,3 +1,5 @@
 [Unit]
 After=mesos-slave.service
 Wants=mesos-slave.service
+PartOf=mesos-slave.service
+Restart=always
