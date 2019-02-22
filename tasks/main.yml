@@ -1,10 +1,10 @@
 ---
 - include_vars: "{{ ansible_os_family }}.yml"
 
-- include: Debian.yml
+- include_tasks: Debian.yml
   when: ansible_os_family == "Debian"
 
-- include: RedHat.yml
+- include_tasks: RedHat.yml
   when: ansible_os_family == "RedHat"
 
 - name: install wait script
@@ -25,10 +25,10 @@
   tags:
     - marathon
 
-- include: upstart-init.yml
+- include_tasks: upstart-init.yml
   when: ansible_service_mgr != 'systemd'
 
-- include: systemd-init.yml
+- include_tasks: systemd-init.yml
   when: ansible_service_mgr == 'systemd'
 
 - meta: flush_handlers
@@ -40,7 +40,7 @@
   service: name=marathon state=started
   tags: deploy
   register: marathon_running
-  until: marathon_running.state == 'started' and not marathon_running|changed
+  until: marathon_running.state == 'started' and not marathon_running is changed
   retries: 2
   delay: 5
 
@@ -48,5 +48,5 @@
   fail:
     msg: >
       Service marathon has not started as expected, please check its current status or error messages
-  when: marathon_running.state != 'started' or marathon_running|changed
+  when: marathon_running.state != 'started' or marathon_running is changed
   tags: deploy
